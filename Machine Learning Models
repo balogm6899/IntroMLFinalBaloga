@@ -1,0 +1,59 @@
+from google.colab import drive
+drive.mount("/content/drive")
+
+import pandas as pd
+df_train = pd.read_csv('/content/drive/My Drive/train.csv')
+df_test = pd.read_csv('/content/drive/My Drive/test.csv')
+
+df_train
+df_test
+print(df_train.describe())
+print(df_test.describe())
+
+#Separate the data into an x and y frame in order to create split
+x = df_train.iloc[:,2:].values
+y = df_train.target.values
+
+#Import statements are all thrown in this section to save myself time later
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+sns.set(color_codes=True)
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.decomposition import PCA
+from sklearn.metrics import roc_auc_score
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
+
+#Create the train-test split using sklearn
+train_X, test_X, train_y, test_y = train_test_split(x, y, 
+                                                    train_size=0.50,
+                                                    test_size=0.50,
+                                                    random_state=123)
+
+
+
+#KNN model and score
+KNNclassifier = KNeighborsClassifier()
+KNNclassifier.fit(train_X, train_y)
+KNNpred_y = KNNclassifier.predict(test_X)
+KNNPred = roc_auc_score(test_y, KNNpred_y)
+
+
+#Decision Tree Classifier and score
+DTclf = tree.DecisionTreeClassifier()
+DTclf = DTclf.fit(train_X, train_y)
+DTpred_y = DTclf.predict(test_X)
+DTPred = roc_auc_score(test_y, DTpred_y)
+
+#Random Forest Classifier and score
+RFclf = RandomForestClassifier(n_estimators=100)
+RFclf = RFclf.fit(train_X, train_y)
+RFclfpred_y = RFclf.predict(test_X)
+RFPred = roc_auc_score(test_y, RFclfpred_y) 
+
+#Print the ROC Area under Curve Scores
+print(KNNPred)
+print(DTPred)
+print(RFPred)
